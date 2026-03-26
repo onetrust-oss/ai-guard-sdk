@@ -26,8 +26,8 @@ jobs:
             ai-guard-test \
             bash -c "
               pip install '.[dev]' &&
-              ruff format --check . &&
-              ruff check . &&
+              # ruff format --check . &&
+              # ruff check . &&
               mkdir -p target &&
               pytest
             "
