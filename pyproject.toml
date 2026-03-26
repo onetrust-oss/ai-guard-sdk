@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ai-guard-sdk"
+version = "0.1.0"
+description = "Python SDK for AI Guard classification service"
+readme = "README.md"
+requires-python = ">=3.13"
+license = {text = "MIT"}
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "cryptography>=43.0.0",
+    "python-dotenv>=1.0.0",
+    "requests>=2.25.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "trustme>=1.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["ai_guard*"]
+
+[tool.setuptools.package-data]
+"*" = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["ai_guard/tests"]
