@@ -1,0 +1,26 @@
+{
+  "id": "7dbf380f-0af8-4276-acb0-85413db2dbff",
+  "name": "Test Profile",
+  "description": "",
+  "profileVersion": 1,
+  "isDefault": false,
+  "nerEnabled": false,
+  "documentClassificationEnabled": false,
+  "duplicateDocumentFindingEnabled": false,
+  "documentClusteringEnabled": false,
+  "cloneCount": 0,
+  "profileSettings": [
+    {
+      "detectorName": "phonenumber",
+      "detectorVersion": 1,
+      "detectorCode": "phonenumber",
+      "sampleSize": 0,
+      "custom": false,
+      "threshold": 30,
+      "isPII": true,
+      "id": "aee11c51-948a-453b-8dac-5ae28d1c0485"
+    }
+  ],
+  "surrogateDetectorsBases": [],
+  "custom": true
+}
