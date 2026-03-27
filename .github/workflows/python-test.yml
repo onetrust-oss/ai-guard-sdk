@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build test image
-        run: docker build -t ai-guard-test -f .github/gh/ci.Dockerfile .
+        run: docker build -t ai-guard-test -f .github/workflows/ci.Dockerfile .
 
       - name: Run linting and tests
         run: |
