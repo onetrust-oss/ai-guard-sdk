@@ -1,0 +1,32 @@
+name: Python SDK Tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  python-sdk-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build test image
+        run: docker build -t ai-guard-test -f .github/gh/ci.Dockerfile .
+
+      - name: Run linting and tests
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/app" \
+            -w /app \
+            ai-guard-test \
+            bash -c "
+              pip install '.[dev]' &&
+              ruff format --check . &&
+              ruff check . &&
+              pytest
+            "
