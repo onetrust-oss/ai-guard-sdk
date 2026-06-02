@@ -9,7 +9,7 @@ This SDK is the Python client for the **AI Guard Service** which is deployed in 
 Requires **Python 3.13+**.
 
 ```bash
-pip install "ai-guard-sdk @ git+https://github.com/onetrust-oss/ai-guard-sdk.git"
+pip install onetrust-ai-guard-sdk
 ```
 
 ## Quick Start
