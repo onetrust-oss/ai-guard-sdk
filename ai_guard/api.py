@@ -115,6 +115,19 @@ class ClassifierDescriptionProfile(ClassifierDescription):
         }
 
 
+@dataclass
+class ClassifierDescriptionProfileName(ClassifierDescription):
+    """Select classifiers by profile name."""
+
+    name: str
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "type": "profileName",
+            "name": self.name,
+        }
+
+
 class ClassifierDescriptionDefault(ClassifierDescription):
     """Use the built-in default classifier profile."""
 

@@ -8,6 +8,7 @@ from ai_guard.api import (
     ClassifierDescriptionCodes,
     ClassifierDescriptionDefault,
     ClassifierDescriptionProfile,
+    ClassifierDescriptionProfileName,
 )
 from ai_guard.tests.test_server import AIGuardTestServices, AuthMode
 
@@ -180,6 +181,52 @@ class TestAIGuardClientIntegration(unittest.TestCase):
         self.assertEqual(
             (first.start, first.end, first.confidence, first.text, first.classifier),
             (6, 18, 100, "321-507-0525", "US_PHONE_NUMBER"),
+        )
+
+        received = self.server.last_classification_request()
+        self.assertIsNotNone(received)
+        self.assertEqual(
+            received["classifierDescription"],
+            {
+                "type": "profile",
+                "uuid": "7dbf380f-0af8-4276-acb0-85413db2dbff",
+                "version": 1,
+            },
+        )
+
+    def test_classify_with_profile_name(self):
+        client = self._client()
+        self.server.set_classification_response(
+            [
+                {
+                    "start": 6,
+                    "end": 18,
+                    "confidence": 100,
+                    "text": "321-507-0525",
+                    "classifier": "US_PHONE_NUMBER",
+                },
+            ]
+        )
+
+        request = ClassificationRequest(
+            context={"actor": "user"},
+            classifier_description=ClassifierDescriptionProfileName(
+                name="Custom Profile",
+            ),
+            text="phone 321-507-0525 number",
+        )
+
+        resp = client.classify(request)
+
+        self.assertEqual(len(resp.matches), 1)
+        first = resp.matches[0]
+        self.assertEqual(first.classifier, "US_PHONE_NUMBER")
+
+        received = self.server.last_classification_request()
+        self.assertIsNotNone(received)
+        self.assertEqual(
+            received["classifierDescription"],
+            {"type": "profileName", "name": "Custom Profile"},
         )
 
     def test_classify_empty_text(self):

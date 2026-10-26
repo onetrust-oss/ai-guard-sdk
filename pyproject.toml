@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "onetrust-ai-guard-sdk"
-version = "0.1.0"
+version = "0.2.0"
 description = "Python SDK for OneTrust AI Guard Service"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -12,7 +12,7 @@ license = {file = "LICENSE"}
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
+    "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.13",
 ]
@@ -23,10 +23,22 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+otel = [
+    "opentelemetry-api>=1.20.0",
+]
+otel-sdk = [
+    "opentelemetry-sdk>=1.20.0",
+]
+bedrock = [
+    "boto3>=1.34.0",
+]
 dev = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
     "trustme>=1.0.0",
+    "opentelemetry-api>=1.20.0",
+    "opentelemetry-sdk>=1.20.0",
+    "boto3>=1.34.0",
 ]
 
 [tool.setuptools.packages.find]
