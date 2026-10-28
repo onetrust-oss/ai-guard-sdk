@@ -139,6 +139,9 @@ class AIGuardTestServices:
     ) -> None:
         self.classification_service.set_classification_handler(handler)
 
+    def last_classification_request(self) -> dict | None:
+        return self.classification_service.last_classification_request()
+
     def start(self) -> None:
         self._port = self._allocate_port()
 
