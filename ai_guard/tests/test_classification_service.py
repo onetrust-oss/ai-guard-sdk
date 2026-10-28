@@ -9,6 +9,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 _ALLOWED_METER_NAMES = {"ai_guard.agent", "ai_guard.user", "ai_guard.redact"}
 _HISTOGRAM_METERS = {"ai_guard.agent"}
+_ALLOWED_CLASSIFIER_DESCRIPTION_TYPES = {"profile", "profileName", "codes", "json"}
 
 
 class TestClassificationService:
@@ -21,6 +22,7 @@ class TestClassificationService:
         self._classification_handler: Callable[[dict], list[dict]] | None = None
         self._classification_matches: list[dict] | None = None
         self._classification_error: tuple[int, str] | None = None
+        self._last_classification_request: dict | None = None
 
         self._metrics: list[dict] = []
         self._metrics_lock = threading.Lock()
@@ -54,6 +56,10 @@ class TestClassificationService:
             self._classification_handler = handler
             self._classification_matches = None
             self._classification_error = None
+
+    def last_classification_request(self) -> dict | None:
+        with self._response_lock:
+            return self._last_classification_request
 
     def poll_metrics(
         self,
@@ -130,9 +136,19 @@ class TestClassificationService:
                     self._send_error(400, "Invalid JSON")
                     return
 
+                description = request.get("classifierDescription") or {}
+                description_type = description.get("type")
+                if description_type not in _ALLOWED_CLASSIFIER_DESCRIPTION_TYPES:
+                    self._send_error(
+                        400,
+                        f"Unknown classifierDescription.type: {description_type}",
+                    )
+                    return
+
                 context = request.get("context", {})
 
                 with service_ref._response_lock:
+                    service_ref._last_classification_request = request
                     handler = service_ref._classification_handler
                     error = service_ref._classification_error
                     static_matches = service_ref._classification_matches

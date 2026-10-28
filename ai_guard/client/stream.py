@@ -5,6 +5,7 @@ from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass
 from threading import Lock, Thread
 
+from ai_guard.agent import bind_captured_agent, capture_active_agent
 from ai_guard.api import (
     ClassificationRequest,
     ClassificationRequestMetadata,
@@ -81,9 +82,17 @@ class ClassificationStream:
         self._output_queue: _queue.Queue[ClassificationStreamResult | None] = (
             _queue.Queue()
         )
+        # `client.activate()` scopes the active agent via a contextvar, which
+        # is not propagated automatically into a new Thread or into
+        # ThreadPoolExecutor workers. Capture it here (at construction time,
+        # inside any `with client.activate(...):` block) and re-bind it at
+        # the start of the consumer thread and each submitted chunk so the
+        # correct agent identity is used throughout.
+        self._captured_agent = capture_active_agent()
 
     def __iter__(self) -> Iterator[ClassificationStreamResult]:
         def _consume():
+            bind_captured_agent(self._captured_agent)
             try:
                 for text in self._input:
                     if self._stopped:
@@ -108,6 +117,7 @@ class ClassificationStream:
         offset: int,
         metadata: ClassificationRequestMetadata | None,
     ) -> tuple[int, str, int, ClassificationResponse, Redaction | None]:
+        bind_captured_agent(self._captured_agent)
         req = ClassificationRequest(
             context=self._context,
             classifier_description=self._classifier_description,

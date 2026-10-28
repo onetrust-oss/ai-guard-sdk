@@ -12,8 +12,10 @@ from ai_guard.api import (
     ClassificationResponseMatch,
     ClassifierDescriptionCode,
     ClassifierDescriptionCodes,
+    ClassifierDescriptionDefault,
     ClassifierDescriptionJson,
     ClassifierDescriptionProfile,
+    ClassifierDescriptionProfileName,
     MetricsEvent,
     MetricsEventMeter,
 )
@@ -176,6 +178,28 @@ class TestAIGuardClient(unittest.TestCase):
         payload_json = req_json.to_dict()
         self.assertEqual(payload_json["classifierDescription"]["type"], "json")
         self.assertEqual(len(payload_json["classifierDescription"]["classifiers"]), 2)
+
+        # ProfileName variant
+        profile_name = ClassifierDescriptionProfileName(name="My Profile")
+        req_pn = ClassificationRequest(
+            context=None, classifier_description=profile_name, text="x"
+        )
+        payload_pn = req_pn.to_dict()
+        self.assertEqual(
+            payload_pn["classifierDescription"],
+            {"type": "profileName", "name": "My Profile"},
+        )
+
+    def test_classifier_description_default_uses_builtin_profile(self):
+        default = ClassifierDescriptionDefault()
+        self.assertEqual(
+            default.to_dict(),
+            {
+                "type": "profile",
+                "uuid": "7dbf380f-0af8-4276-acb0-85413db2dbff",
+                "version": 1,
+            },
+        )
 
     def test_metadata_serialization(self):
         md = ClassificationRequestMetadata(
